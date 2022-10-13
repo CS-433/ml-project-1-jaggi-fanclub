@@ -24,7 +24,7 @@ def compute_gradient(y, tx, w):
     return grad, err
 
 
-def mean squared error gd((y, tx, initial_w, max_iters, gamma):
+def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     # Define parameters to store w and loss
 
@@ -77,7 +77,7 @@ def compute_stoch_gradient(y, tx, w):
     return grad, err
 
 
-def mean squared error sgd(y, tx, initial_w, max_iters, gamma):
+def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
     """Stochastic gradient descent."""
     # Define parameters to store w and loss
 
@@ -100,7 +100,7 @@ def mean squared error sgd(y, tx, initial_w, max_iters, gamma):
 ##########################
 #Function3
                           
-def least squares(y, tx):
+def least_squares(y, tx):
     """Calculate the least squares solution.
        returns mse, and optimal weights.
     
