@@ -1,3 +1,4 @@
+                   
 import numpy as np
 
 
@@ -26,19 +27,18 @@ def compute_gradient(y, tx, w):
 
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
-    # Define parameters to store w and loss
-
     w = initial_w
+    if max_iters == 0:
+        grad, err = compute_gradient(y, tx, w)
+        loss = calculate_mse(err)
+        
     for n_iter in range(max_iters):
         # compute loss, gradient
         grad, err = compute_gradient(y, tx, w)
         loss = calculate_mse(err)
         # gradient w by descent update
         w = w - gamma * grad
-        # store w and loss
 
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return w,loss
 
 ##########################
@@ -116,7 +116,7 @@ def least_squares(y, tx):
     (array([ 0.21212121, -0.12121212]), 8.666684749742561e-33)
     """
     ## INSERT YOUR CODE HERE
-    ## least squares: TODO
+    ## least squares: ''
     a = tx.T.dot(tx)
     b = tx.T.dot(y)
     w = np.linalg.solve(a, b)
@@ -157,16 +157,190 @@ def ridge_regression(y, tx, lambda_):
     
     
 ##########################
+
+def sigmoid(t):
+    """apply sigmoid function on t.
+
+    Args:
+        t: scalar or numpy array
+
+    Returns:
+        scalar or numpy array
+
+    >>> sigmoid(np.array([0.1]))
+    array([0.52497919])
+    >>> sigmoid(np.array([0.1, 0.1]))
+    array([0.52497919, 0.52497919])
+    """
+    return np.exp(t)/(1+np.exp(t))
+
+def calculate_loss_reg(y, tx, w):
+    """compute the cost by negative log likelihood.
+
+    Args:
+        y:  shape=(N, 1)
+        tx: shape=(N, D)
+        w:  shape=(D, 1) 
+
+    Returns:
+        a non-negative loss
+
+    >>> y = np.c_[[0., 1.]]
+    >>> tx = np.arange(4).reshape(2, 2)
+    >>> w = np.c_[[2., 3.]]
+    >>> round(calculate_loss(y, tx, w), 8)
+    1.52429481
+    """
+    assert y.shape[0] == tx.shape[0]
+    assert tx.shape[1] == w.shape[0]
+    """n= y.shape[0]
+    s=0
+    for i in range(n):
+        s += -y[i]*tx[i,:]@w+np.log(1+np.exp(tx[i,:]@w))
+   
+    return float(s/n)"""
+    n= y.shape[0]
+    val = sigmoid(tx@w)
+    
+    loss = y.T@(np.log(val)) + (1 - y).T@(np.log(1 - val))
+
+    return float(-1/n*loss)
+def calculate_gradient_reg(y, tx, w):
+    """compute the gradient of loss.
+    
+    Args:
+        y:  shape=(N, 1)
+        tx: shape=(N, D)
+        w:  shape=(D, 1) 
+
+    Returns:
+        a vector of shape (D, 1)
+
+    >>> np.set_printoptions(8)
+    >>> y = np.c_[[0., 1.]]
+    >>> tx = np.arange(6).reshape(2, 3)
+    >>> w = np.array([[0.1], [0.2], [0.3]])
+    >>> calculate_gradient(y, tx, w)
+    array([[-0.10370763],
+           [ 0.2067104 ],
+           [ 0.51712843]])
+    """
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # ''
+    # ***************************************************
+    return 1/y.shape[0]*tx.T@(sigmoid(tx@w)-y)
+
 #Function5
+def logistic_regression(y, tx, initial_w,max_iters, gamma):
+    """
+    Do one step of gradient descent using logistic regression. Return the loss and the updated w.
+
+    Args:
+        y:  shape=(N, 1)
+        tx: shape=(N, D)
+        w:  shape=(D, 1) 
+        gamma: float
+
+    Returns:
+        loss: scalar number
+        w: shape=(D, 1) 
+
+
+    """
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # 
+    w = initial_w
+    loss= 0 
+    for iter in range(max_iters):
+        # get loss and update w.
+        loss = calculate_loss_reg(y,tx,w)
+        w = w - gamma* calculate_gradient_reg(y, tx, w)
+        
+    
+
+    return loss,w
+        
+
                           
                           
                       
                           
 ##########################
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss and gradient.
+
+    Args:
+        y:  shape=(N, 1)
+        tx: shape=(N, D)
+        w:  shape=(D, 1)
+        lambda_: scalar
+
+    Returns:
+        loss: scalar number
+        gradient: shape=(D, 1)
+
+    >>> y = np.c_[[0., 1.]]
+    >>> tx = np.arange(6).reshape(2, 3)
+    >>> w = np.array([[0.1], [0.2], [0.3]])
+    >>> lambda_ = 0.1
+    >>> loss, gradient = penalized_logistic_regression(y, tx, w, lambda_)
+    >>> round(loss, 8)
+    0.63537268
+    >>> gradient 
+    array([[-0.08370763],
+           [ 0.2467104 ],
+           [ 0.57712843]])
+    """
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # return loss, gradient, and Hessian: ''
+    # ***************************************************
+    loss = calculate_loss_reg(y, tx, w) + lambda_ * float(w.T@w)
+    gradient = calculate_gradient_reg(y, tx, w) + 2 * lambda_*w
+
+    return loss, gradient
 #Function6                          
-                          
-                          
-                          
+
+def reg_logistic_regression(y, tx, lambda_ ,initial_w, max_iters, gamma):
+    """
+    Do one step of gradient descent, using the penalized logistic regression.
+    Return the loss and updated w.
+
+    Args:
+        y:  shape=(N, 1)
+        tx: shape=(N, D)
+        w:  shape=(D, 1)
+        gamma: scalar
+        lambda_: scalar
+
+    Returns:
+        loss: scalar number
+        w: shape=(D, 1)
+    """
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # return loss, gradient: ''
+    # ***************************************************
+    w = initial_w
+    loss = 0
+
+    # start the logistic regression
+    for iter in range(max_iters):
+        # get loss and update w.
+        loss, gradient=penalized_logistic_regression(y,tx,w,lambda_)
+        w = w - gamma* gradient
+        
+  
+    # ***************************************************
+    # INSERT YOUR CODE HERE
+    # update w: ''
+    # ***************************************************
+    
+    
+    return loss, w                          
                           
                           
                           
