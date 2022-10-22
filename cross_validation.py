@@ -12,9 +12,6 @@ def build_k_indices(y, k_fold, seed=1):
     Returns:
         A 2D array of shape=(k_fold, N/k_fold) that indicates the data indices for each fold
 
-    >>> build_k_indices(np.array([1., 2., 3., 4.]), 2, 1)
-    array([[3, 2],
-           [0, 1]])
     """
     num_row = y.shape[0]
     interval = int(num_row / k_fold)
@@ -34,9 +31,6 @@ def build_poly(x, degree):
     Returns:
         poly: numpy array of shape (N,d+1)
         
-    >>> build_poly(np.array([0.0, 1.5]), 2)
-    array([[1.  , 0.  , 0.  ],
-           [1.  , 1.5 , 2.25]])
     """
     poly = x
     
@@ -61,13 +55,11 @@ def cross_validation(x, y, k_indices, k, lambda_, degree):
     Returns:
         train and test root mean square errors rmse = sqrt(2 mse)
 
-    >>> cross_validation(np.array([1.,2.,3.,4.]), np.array([6.,7.,8.,9.]), np.array([[3,2], [0,1]]), 1, 2, 3)
-    (0.019866645527598144, 0.3355591436129497)
     """
 
     # ***************************************************
     # INSERT YOUR CODE HERE
-    # get k'th subgroup in test, others in train: TODO
+
     indice_test_k = k_indices[k]
     x_test = x[indice_test_k,:]
     y_test = y[indice_test_k]
@@ -80,7 +72,6 @@ def cross_validation(x, y, k_indices, k, lambda_, degree):
    
     # ***************************************************
     # INSERT YOUR CODE HERE
-    # form data with polynomial degree: TODO
     poly_tr = build_poly(x_train, degree)
     poly_te = build_poly(x_test, degree)
 
@@ -88,14 +79,12 @@ def cross_validation(x, y, k_indices, k, lambda_, degree):
    
     # ***************************************************
     # INSERT YOUR CODE HERE
-    # ridge regression: TODO
     w_star,_ = ridge_regression(y_train,poly_tr,lambda_)
     
     # ***************************************************
 
     # ***************************************************
     # INSERT YOUR CODE HERE
-    # calculate the loss for train and test data: TODO
    
     loss_tr = np.sqrt(2*compute_loss(y_train, poly_tr, w_star))
     loss_te = np.sqrt(2*compute_loss(y_test, poly_te, w_star))
@@ -130,7 +119,6 @@ def cross_validation_demo(x,y,degree, k_fold, lambdas):
     rmse_te = []
     # ***************************************************
     # INSERT YOUR CODE HERE
-    # cross validation over lambdas: TODO
     for lambda_ in lambdas:
         rmse_tr_k = []
         rmse_te_k = []
@@ -162,8 +150,7 @@ def best_degree_selection(x,y,degrees, k_fold, lambdas, seed = 1):
         best_lambda : scalar, value of the best lambda
         best_rmse : value of the rmse for the couple (best_degree, best_lambda)
         
-    >>> best_degree_selection(np.arange(2,11), 4, np.logspace(-4, 0, 30))
-    (7, 0.004520353656360241, 0.2895728056812453)
+
     """
     
     # split data in k fold
@@ -171,7 +158,6 @@ def best_degree_selection(x,y,degrees, k_fold, lambdas, seed = 1):
     
     # ***************************************************
     # INSERT YOUR CODE HERE
-    # cross validation over degrees and lambdas: TODO
     best_lamba_all_degree = []
     best_rmse_all_degree = []
     for degree in degrees:
@@ -210,14 +196,12 @@ def split_data(x, y, ratio, seed):
         y_tr: numpy array containing the train labels.
         y_te: numpy array containing the test labels.
         
-    >>> split_data(np.arange(13), np.arange(13), 0.8, 1)
-    (array([ 2,  3,  4, 10,  1,  6,  0,  7, 12,  9]), array([ 8, 11,  5]), array([ 2,  3,  4, 10,  1,  6,  0,  7, 12,  9]), array([ 8, 11,  5]))
+
     """
     # set seed
     np.random.seed(seed)
     # ***************************************************
     # INSERT YOUR CODE HERE
-    # split the data based on the given ratio: TODO
     l = int(np.floor(len(y)*ratio))
     y = np.random.permutation(y)
     np.random.seed(seed)
