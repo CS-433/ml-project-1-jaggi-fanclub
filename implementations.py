@@ -1,14 +1,13 @@
-                   
 import numpy as np
 
 
 #
 #Function1
-def calculate_mse(e):
+def calculate_mse(e: np.ndarray) -> np.float64:
     """Calculate the mse for vector e."""
     return 1/2*np.mean(e**2)
 
-def compute_loss(y, tx, w):
+def compute_loss(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> np.float64:
     """Calculate the loss.
 
     You can calculate the loss using mse or mae.
@@ -18,14 +17,14 @@ def compute_loss(y, tx, w):
     # return calculate_mae(e)
 
     
-def compute_gradient(y, tx, w):
+def compute_gradient(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Compute the gradient."""
     err = y - tx.dot(w)
     grad = -tx.T.dot(err) / len(err)
     return grad, err
 
 
-def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
+def mean_squared_error_gd(y: np.ndarray, tx: np.ndarray, initial_w: np.ndarray, max_iters: int, gamma: float) -> tuple[np.ndarray, np.float64]:
     """Gradient descent algorithm."""
     w = initial_w
     if max_iters == 0:
@@ -44,7 +43,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
 ##########################
 #Function2
                           
-def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+def batch_iter(y: np.ndarray, tx: np.ndarray, batch_size, num_batches: int = 1, shuffle: bool = True):
     """
     Generate a minibatch iterator for a dataset.
     Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
