@@ -3,18 +3,15 @@ import numpy as np
 
 #
 #Function1
-def calculate_mse(e: np.ndarray) -> np.float64:
-    """Calculate the mse for vector e."""
+def compute_mse(e: np.ndarray) -> np.float64:
+    """Computes the mse for vector e."""
     return 1/2*np.mean(e**2)
 
 def compute_loss(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> np.float64:
-    """Calculate the loss.
-
-    You can calculate the loss using mse or mae.
+    """Computes the loss.
     """
     e = y - tx.dot(w)
-    return calculate_mse(e)
-    # return calculate_mae(e)
+    return compute_mse(e)
 
     
 def compute_gradient(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -33,11 +30,11 @@ def mean_squared_error_gd(y: np.ndarray, tx: np.ndarray, initial_w: np.ndarray, 
     for n_iter in range(max_iters):
         # compute loss, gradient
         grad, err = compute_gradient(y, tx, w)
-        loss = calculate_mse(err)
+        loss = compute_mse(err)
         # gradient w by descent update
         w = w - gamma * grad
     grad, err = compute_gradient(y, tx, w)
-    loss = calculate_mse(err)
+    loss = compute_mse(err)
     return w,loss
 
 ##########################
@@ -88,19 +85,19 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
             grad, _ = compute_stoch_gradient(y_batch, tx_batch, w)
             # update w through the stochastic gradient update
             w = w - gamma * grad
-            # calculate loss
+            # compute loss
             loss = compute_loss(y, tx, w)
             # store w and loss
 
         print("SGD({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
               bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return w, loss
-                        
+
 ##########################
 #Function3
                           
 def least_squares(y, tx):
-    """Calculate the least squares solution.
+    """compute the least squares solution.
        returns mse, and optimal weights.
     
     Args:
@@ -112,19 +109,12 @@ def least_squares(y, tx):
         mse: scalar.
 
     """
-    ## INSERT YOUR CODE HERE
-    ## least squares: ''
-    a = tx.T.dot(tx)
-    b = tx.T.dot(y)
-    w = np.linalg.solve(a, b)
-    loss = compute_loss(y, tx, w) 
-    return w,loss
-    ## returns mse, and optimal weights
+    
+    #Computes the optimal w
+    w = np.linalg.inv(tx.T@tx)@tx.T@y
+    mse = compute_loss(y, tx, w)
+    return w, mse
 
-                            
-                          
-                          
-                          
 ##########################
 #Function4
 
@@ -164,7 +154,7 @@ def sigmoid(t):
     """
     return np.exp(t)/(1+np.exp(t))
 
-def calculate_loss_reg(y, tx, w):
+def compute_loss_reg(y, tx, w):
     """compute the cost by negative log likelihood.
 
     Args:
@@ -178,22 +168,15 @@ def calculate_loss_reg(y, tx, w):
     """
     assert y.shape[0] == tx.shape[0]
     assert tx.shape[1] == w.shape[0]
-    """
-    Loop method
-    n= y.shape[0]
-    s=0
-    for i in range(n):
-        s += -y[i]*tx[i,:]@w+np.log(1+np.exp(tx[i,:]@w))
-   
-    return float(s/n)"""
-    n= y.shape[0]
-    val = sigmoid(tx@w)
     
-    loss = y.T@(np.log(val)) + (1 - y).T@(np.log(1 - val))
+    N = y.shape[0]
+    sig_txw = sigmoid(tx@w)
+    
+    loss = y.T@(np.log(sig_txw)) + (1 - y).T@(np.log(1 - sig_txw))
 
-    return -1/n*loss[0,0]
+    return -np.sum(loss)/N
 
-def calculate_gradient_reg(y, tx, w):
+def compute_gradient_reg(y, tx, w):
     """compute the gradient of loss.
     
     Args:
@@ -205,52 +188,37 @@ def calculate_gradient_reg(y, tx, w):
         a vector of shape (D, 1)
 
     """
-    # ***************************************************
-    # INSERT YOUR CODE HERE
-    # ''
-    # ***************************************************
+    #Applies the formula as proven in class
     return 1/y.shape[0]*tx.T@(sigmoid(tx@w)-y)
 
 #Function5
-def logistic_regression(y, tx, initial_w,max_iters, gamma):
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
     """
-    Do one step of gradient descent using logistic regression. Return the loss and the updated w.
+    Do max_iters steps of gradient descent using logistic regression. Return the loss and the updated w.
 
     Args:
         y:  shape=(N, 1)
         tx: shape=(N, D)
-        w:  shape=(D, 1) 
+        initial_w:  shape=(D, 1) 
+        max_iters: int
         gamma: float
 
     Returns:
         loss: scalar number
         w: shape=(D, 1) 
     """
-    # ***************************************************
-    # INSERT YOUR CODE HERE
-    # 
-    w = initial_w 
-    if max_iters == 0:
-        loss= calculate_loss_reg(y, tx, w) 
-        
+   
+    w = initial_w
     for iter in range(max_iters):
-        # get loss and update w.
-        loss = calculate_loss_reg(y,tx,w)
-        w = w - gamma* calculate_gradient_reg(y, tx, w)
-        
+        #Update w
+        w = w - gamma* compute_gradient_reg(y, tx, w)
+    loss = compute_loss_reg(y,tx,w)
     
-    loss = calculate_loss_reg(y,tx,w)
-    return w,loss
-        
+    return w, loss
 
-                          
-                          
-                      
-                          
-##########################
 
 def penalized_logistic_regression(y, tx, w, lambda_):
-    """return the loss and gradient.
+    """Returns the loss and gradient for logistic regression.
 
     Args:
         y:  shape=(N, 1)
@@ -263,52 +231,41 @@ def penalized_logistic_regression(y, tx, w, lambda_):
         gradient: shape=(D, 1)
 
     """
-    # ***************************************************
-    # INSERT YOUR CODE HERE
-    # return loss, gradient, and Hessian: ''
-    # ***************************************************
-    loss = calculate_loss_reg(y, tx, w) + lambda_ * float(w.T@w)
-    gradient = calculate_gradient_reg(y, tx, w) + 2 * lambda_*w
+
+    loss = compute_loss_reg(y, tx, w) + lambda_ * float(w.T@w)
+    gradient = compute_gradient_reg(y, tx, w) + 2 * lambda_*w
 
     return loss, gradient
-#Function6                          
 
+#Function6                          
 def reg_logistic_regression(y, tx, lambda_ ,initial_w, max_iters, gamma):
     """
-    Do one step of gradient descent, using the penalized logistic regression.
+    Do max_iters steps of gradient descent, using the penalized logistic regression.
     Return the loss and updated w.
 
     Args:
         y:  shape=(N, 1)
         tx: shape=(N, D)
-        w:  shape=(D, 1)
-        gamma: scalar
         lambda_: scalar
+        initial_w:  shape=(D, 1)
+        max_iters: int
+        gamma: scalar
 
     Returns:
         loss: scalar number
         w: shape=(D, 1)
     """
-    # ***************************************************
-    # INSERT YOUR CODE HERE
-    # return loss, gradient: ''
-    # ***************************************************
+    
     w = initial_w
-    if max_iters == 0:
-        loss= calculate_loss_reg(y, tx, w) + lambda_ * float(w.T@w)
 
     # start the logistic regression
     for iter in range(max_iters):
-        # get loss and update w.
-        loss, gradient=penalized_logistic_regression(y,tx,w,lambda_)
-        w = w - gamma* gradient
+        #Compute loss and update w.
+        _, gradient = penalized_logistic_regression(y, tx, w, lambda_)
+        w = w - gamma * gradient
         
-    loss = calculate_loss_reg(y, tx, w) + lambda_ * float(w.T@w)
-    # ***************************************************
-    # INSERT YOUR CODE HERE
-    # update w: ''
-    # ***************************************************
-    
+    #Compute loss without penalization ???? TODO: check if bug in tests
+    loss = compute_loss_reg(y, tx, w)
     
     return w, loss                       
                           
