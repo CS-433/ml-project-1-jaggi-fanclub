@@ -1,5 +1,5 @@
 import numpy as np
-from implementation import *
+from implementations import *
 
 def build_k_indices(y, k_fold, seed=1):
     """build k indices for k-fold.
@@ -212,5 +212,3 @@ def split_data(x, y, ratio, seed):
     
     # ***************************************************
     raise NotImplementedError
-
-
