@@ -1,13 +1,14 @@
+from typing import Iterator
 import numpy as np
 
 
 #
 #Function1
-def compute_mse(e: np.ndarray) -> np.float64:
+def compute_mse(e: np.ndarray) -> float:
     """Computes the mse for vector e."""
     return 1/2*np.mean(e**2)
 
-def compute_loss(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> np.float64:
+def compute_loss(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> float:
     """Computes the loss.
     """
     e = y - tx.dot(w)
@@ -21,7 +22,7 @@ def compute_gradient(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> tuple[np.n
     return grad, err
 
 
-def mean_squared_error_gd(y: np.ndarray, tx: np.ndarray, initial_w: np.ndarray, max_iters: int, gamma: float) -> tuple[np.ndarray, np.float64]:
+def mean_squared_error_gd(y: np.ndarray, tx: np.ndarray, initial_w: np.ndarray, max_iters: int, gamma: float) -> tuple[np.ndarray, float]:
     """Gradient descent algorithm."""
     w = initial_w
     if max_iters == 0:
@@ -39,8 +40,8 @@ def mean_squared_error_gd(y: np.ndarray, tx: np.ndarray, initial_w: np.ndarray, 
 
 ##########################
 #Function2
-                          
-def batch_iter(y: np.ndarray, tx: np.ndarray, batch_size, num_batches: int = 1, shuffle: bool = True):
+
+def batch_iter(y: np.ndarray, tx: np.ndarray, batch_size, num_batches: int = 1, shuffle: bool = True) -> Iterator:
     """
     Generate a minibatch iterator for a dataset.
     Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
@@ -65,15 +66,15 @@ def batch_iter(y: np.ndarray, tx: np.ndarray, batch_size, num_batches: int = 1, 
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
-                          
-def compute_stoch_gradient(y, tx, w):
+
+def compute_stoch_gradient(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Compute a stochastic gradient for batch data."""
     err = y - tx.dot(w)
     grad = -tx.T.dot(err) / len(err)
     return grad, err
 
 
-def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
+def mean_squared_error_sgd(y: np.ndarray, tx: np.ndarray, initial_w: np.ndarray, max_iters: int, gamma: float) -> tuple[np.ndarray, float]:
     """Stochastic gradient descent."""
     # Define parameters to store w and loss
 
@@ -95,11 +96,11 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
 
 ##########################
 #Function3
-                          
-def least_squares(y, tx):
+
+def least_squares(y: np.ndarray, tx: np.ndarray) -> tuple[np.ndarray, float]:
     """compute the least squares solution.
        returns mse, and optimal weights.
-    
+
     Args:
         y: numpy array of shape (N,), N is the number of samples.
         tx: numpy array of shape (N,D), D is the number of features.
@@ -109,7 +110,7 @@ def least_squares(y, tx):
         mse: scalar.
 
     """
-    
+
     #Computes the optimal w
     w = np.linalg.inv(tx.T@tx)@tx.T@y
     mse = compute_loss(y, tx, w)
@@ -118,7 +119,7 @@ def least_squares(y, tx):
 ##########################
 #Function4
 
-def ridge_regression(y, tx, lambda_):
+def ridge_regression(y: np.ndarray, tx: np.ndarray, lambda_: float) -> tuple[np.ndarray, float]:
     """implement ridge regression.
     
     Args:
@@ -131,6 +132,9 @@ def ridge_regression(y, tx, lambda_):
 
 
     """
+
+    #TODO: clean up shape access, tx.T @ tx not necessary
+    
     shape = (tx.T@tx).shape
     shape_y = y.shape
     a = tx.T@tx + 2*shape_y[0]*lambda_*np.eye(shape[0])
@@ -142,8 +146,8 @@ def ridge_regression(y, tx, lambda_):
     
 ##########################
 
-def sigmoid(t):
-    """apply sigmoid function on t.
+def sigmoid(t: np.ndarray) -> np.ndarray:
+    """Applies sigmoid function on t.
 
     Args:
         t: scalar or numpy array
@@ -154,8 +158,8 @@ def sigmoid(t):
     """
     return np.exp(t)/(1+np.exp(t))
 
-def compute_loss_reg(y, tx, w):
-    """compute the cost by negative log likelihood.
+def compute_loss_reg(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> float:
+    """Computes the cost by negative log likelihood.
 
     Args:
         y:  shape=(N, 1)
@@ -177,7 +181,7 @@ def compute_loss_reg(y, tx, w):
     return -np.sum(loss)/N
 
 def compute_gradient_reg(y, tx, w):
-    """compute the gradient of loss.
+    """Computes the gradient of loss.
     
     Args:
         y:  shape=(N, 1)
@@ -194,7 +198,7 @@ def compute_gradient_reg(y, tx, w):
 #Function5
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     """
-    Do max_iters steps of gradient descent using logistic regression. Return the loss and the updated w.
+    Do max_iters steps of gradient descent using logistic regression. Return the loss and the updated weights.
 
     Args:
         y:  shape=(N, 1)
@@ -267,37 +271,4 @@ def reg_logistic_regression(y, tx, lambda_ ,initial_w, max_iters, gamma):
     #Compute loss without penalization ???? TODO: check if bug in tests
     loss = compute_loss_reg(y, tx, w)
     
-    return w, loss                       
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                
-                         
-                  
+    return w, loss
