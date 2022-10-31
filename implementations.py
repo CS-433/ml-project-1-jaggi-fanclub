@@ -132,8 +132,6 @@ def ridge_regression(y: np.ndarray, tx: np.ndarray, lambda_: float) -> tuple[np.
 
 
     """
-
-    #TODO: clean up shape access, tx.T @ tx not necessary
     
     w = np.linalg.inv(tx.T@tx + 2*lambda_*tx.shape[1]*np.eye(tx.shape[1]))@tx.T@y
     loss = compute_loss(y, tx, w)                   
@@ -179,7 +177,7 @@ def compute_loss_reg(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> float:
 
     return -np.sum(loss)/N
 
-def compute_gradient_reg(y, tx, w):
+def compute_gradient_reg(y: np.ndarray, tx: np.ndarray, w: np.ndarray) -> np.ndarray:
     """Computes the gradient of loss.
     
     Args:
@@ -195,7 +193,7 @@ def compute_gradient_reg(y, tx, w):
     return (1/y.shape[0]) * tx.T@(sigmoid(tx@w)-y)
 
 #Function5
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
+def logistic_regression(y: np.ndarray, tx: np.ndarray, initial_w: np.ndarray, max_iters: int, gamma: float) -> tuple[np.ndarray, float]:
     """
     Do max_iters steps of gradient descent using logistic regression. Return the loss and the updated weights.
 
@@ -207,8 +205,8 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         gamma: float
 
     Returns:
+   	w: shape=(D, 1) 
         loss: scalar number
-        w: shape=(D, 1) 
     """
    
     w = initial_w
@@ -220,7 +218,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     return w, loss
 
 
-def penalized_logistic_regression(y, tx, w, lambda_):
+def penalized_logistic_regression(y: np.ndarray, tx: np.ndarray, w: np.ndarray, lambda_: float) -> tuple[float, np.ndarray]:
     """Returns the loss and gradient for logistic regression.
 
     Args:
@@ -241,7 +239,7 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     return loss, gradient
 
 #Function6                          
-def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+def reg_logistic_regression(y: np.ndarray, tx: np.ndarray, lambda_: float, initial_w: np.ndarray, max_iters: int, gamma: float) -> tuple[np.ndarray, float]:
     """
     Do max_iters steps of gradient descent, using the penalized logistic regression.
     Return the loss and updated w.
@@ -267,7 +265,6 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         _, gradient = penalized_logistic_regression(y, tx, w, lambda_)
         w = w - gamma * gradient
         
-    #Compute loss without penalization ???? TODO: check if bug in tests
     loss = compute_loss_reg(y, tx, w)
     
     return w, loss

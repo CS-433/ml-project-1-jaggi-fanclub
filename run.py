@@ -79,8 +79,8 @@ print("Starting ridge regression.")
 best_degrees = {}
 w_preds = {}
 for jet in jets:
-    degrees = np.arange(2,4)
-    k_fold = 3
+    degrees = np.arange(2, 6)
+    k_fold = 5
     lambdas = np.logspace(-4, 0, 30)
     #Computes the best degree and lambda
     best_degree, best_lambda, _ = best_degree_selection(tx_split[jet], y_split[jet],
@@ -92,7 +92,7 @@ for jet in jets:
     w_pred, _ = ridge_regression(y_split[jet], poly_tr, best_lambda)
 
     w_preds[jet] = w_pred
-    print("Ridge done for jet subset nr", jet)
+    print("Jet:",jet,", best lambda:", best_lambda, ", best degree:", best_degree)
 
 print("Processing the test data.")
 #Splits the data for testing in the same way as for the training data
