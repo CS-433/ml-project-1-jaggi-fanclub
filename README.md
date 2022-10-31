@@ -13,7 +13,7 @@ We implement **machine learning** methods to predict whether a collision was a s
 
 ## This repo contains:
 - implementions.py which contains the 6 basic machine learning methods 
-- run.py file which correspond the implementation which gave us the best accuracy.
+- run.py file which correspond the implementation which gave us the best accuracy
 - cleanup_helpers.py which contains the methods used for cleaning up the data in run.py
-- Other helper functions for finding the parameters and doing visualization
-- The report.pdf : 2 pages report of the project 1 which explain our methods.
+- other helper functions for finding the best parameters and doing visualization
+- report.pdf : 2 pages report of the project 1 which explain our methods
