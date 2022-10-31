@@ -16,4 +16,4 @@ We implement **machine learning** methods to predict whether a collision was a s
 - run.py file which correspond the implementation which gave us the best accuracy
 - cleanup_helpers.py which contains the methods used for cleaning up the data in run.py
 - other helper functions for finding the best parameters and doing visualization
-- report.pdf : 2 pages report of the project 1 which explain our methods
+- ML_project1.pdf : 2 pages report of the project 1 which explain our methods
